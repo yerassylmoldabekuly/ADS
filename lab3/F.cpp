@@ -1,133 +1,50 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-class Node{
-public:
-    int x;
-    Node* next;
+bool canSteal(const vector<long long>& bags, long long k, long long H) {
+    long long hours = 0;
 
-    Node(int x) : x(x) , next(nullptr) {}
-};
+    for (long long bag : bags) {
+        hours += (bag + k - 1) / k;
 
-class LinkedList{
-public:
-    Node* head;
-    Node* tail;
-
-    LinkedList() : head(nullptr), tail(nullptr) {}
-
-    void push_back(int x){
-        Node* newNode = new Node(x);
-
-        if(head == nullptr){
-            head = newNode;
-            tail = newNode;
-        }
-        else{
-            tail-> next = newNode;
-            tail = newNode;
+        if (hours > H) {
+            return false;
         }
     }
 
-    void solve(LinkedList& list2){
-        Node* curr = head;
-        Node* curr2 = list2.head;
+    return true;
+}
 
-        if(curr == nullptr){
-            head = list2.head;
-            tail = list2.tail;
-            
-            while(curr2 != nullptr){
-                cout << curr2-> x << " ";
-                curr2 = curr2-> next;
-            }
-
-            return;
-        }
-        else if(curr2 == nullptr){
-            while(curr != nullptr){
-                cout << curr-> x << " ";
-                curr = curr-> next;
-            }
-            return;
-        }
-        else if(curr == nullptr && curr2 == nullptr){
-            cout << endl;
-            return;
-        }
-
-        Node* newHead = nullptr;
-        Node* mergedtail = nullptr;
-
-        if(curr-> x > curr2-> x){
-            newHead = curr2;
-            mergedtail = curr2;
-
-            curr2 = curr2-> next;
-        }
-        else{
-            newHead = curr;
-            mergedtail = curr;
-
-            curr = curr-> next;
-        }
-
-        while(curr != nullptr && curr2 != nullptr){
-            if(curr-> x >= curr2-> x){
-                mergedtail-> next = curr2;
-                mergedtail = curr2;
-
-                curr2 = curr2-> next;
-            }
-            else if(curr-> x < curr2-> x){
-                mergedtail-> next = curr;
-                mergedtail = curr;
-
-                curr = curr-> next;
-            }
-        }
-
-        if(curr == nullptr){
-            mergedtail-> next = curr2;
-        }
-        else if(curr2 == nullptr){
-            mergedtail-> next = curr;
-        }
-
-        mergedtail = newHead;
-
-        while(mergedtail != nullptr){
-            cout << mergedtail-> x << " ";
-            mergedtail = mergedtail-> next;
-        }
-    }
-};
-
-int main(){
+int main() {
     int n;
-    cin >> n;
+    long long H;
 
-    LinkedList list;
-    LinkedList list2;
+    cin >> n >> H;
 
-    for(int i = 0; i < n; ++i){
-        int t;
-        cin >> t;
+    vector<long long> bags(n);
 
-        list.push_back(t);
+    for (int i = 0; i < n; ++i) {
+        cin >> bags[i];
     }
 
-    int y;
-    cin >> y;
+    long long left = 1;
+    long long right = *max_element(bags.begin(), bags.end());
 
-    for(int i = 0; i < y; ++i){
-        int k;
-        cin >> k;
+    while (left < right) {
+        long long mid = left + (right - left) / 2;
 
-        list2.push_back(k);
+        if (canSteal(bags, mid, H)) {
+            right = mid;
+        }
+        else {
+            left = mid + 1;
+        }
     }
 
-    list.solve(list2);
-    cout << endl;
+    cout << left << '\n';
+
+    return 0;
 }

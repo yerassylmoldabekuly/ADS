@@ -1,74 +1,38 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-class Node{
-public:
-    int x;
-    Node* next;
-
-    Node(int x) : x(x) , next(nullptr) {}
-};
-
-class LinkedList{
-public:
-    Node* head;
-    Node* tail;
-
-    LinkedList() : head(nullptr), tail(nullptr) {}
-
-    void push_back(int x){
-        Node* newNode = new Node(x);
-
-        if(head == nullptr){
-            head = newNode;
-            tail = newNode;
-        }
-        else{
-            tail-> next = newNode;
-            tail = newNode;
-        }
-    }
-
-    void reverselist(){
-        Node* curr = head;
-        Node* prev = nullptr;
-        Node* next = nullptr;
-
-        while(curr != nullptr){
-            next = curr-> next;
-            curr-> next = prev;
-            prev = curr;
-            curr = next;
-        }
-
-        head = prev;
-    }
-
-    void print(){
-        Node* curr = head;
-
-        while(curr != nullptr){
-            cout << curr-> x << " ";
-            curr = curr-> next;
-        }
-    }
-};
-
-int main(){
-
+int main() {
     int n;
     cin >> n;
 
-    LinkedList list;
+    vector<long long> a(n);
 
-    for(int i = 0; i < n; ++i){
-        int t;
-        cin >> t;
-
-        list.push_back(t);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
     }
 
-    list.reverselist();
-    list.print();
+    sort(a.begin(), a.end());
+
+    vector<long long> prefix(n + 1, 0);
+
+    for (int i = 0; i < n; ++i) {
+        prefix[i + 1] = prefix[i] + a[i];
+    }
+
+    int p;
+    cin >> p;
+
+    while (p--) {
+        long long power;
+        cin >> power;
+
+        int pos = upper_bound(a.begin(), a.end(), power) - a.begin();
+
+        cout << pos << " " << prefix[pos] << '\n';
+    }
+
+    return 0;
 }
